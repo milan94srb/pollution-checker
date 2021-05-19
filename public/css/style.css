@@ -1,0 +1,38 @@
+.navbar-brand {
+    position: absolute;
+}
+
+.top {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 40vh;
+    flex-wrap: wrap;
+}
+
+.content {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.pollution-chart-wrapper {
+    position: relative;
+    height: 40vh;
+}
+
+.map iframe {
+    max-width: 355px;
+    height: 200px;
+}
+
+@media only screen and (max-width: 991px) {
+    .navbar-brand {
+        position: relative;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .top {
+        height: auto;
+    }
+}
