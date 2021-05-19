@@ -49,7 +49,7 @@ var pollutionChart = new Chart(ctx, {
     }
 });
 
-const socket = new WebSocket('ws://pollution-checker.herokuapp.com/');
+const socket = new WebSocket(location.origin.replace(/^http/, 'ws'));
 
 socket.addEventListener('message', (event) => {
     let message = event.data;
