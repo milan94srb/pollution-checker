@@ -11,6 +11,10 @@ app.get('/', (req, res) => {
     res.render('index', {template: 'index'});
 });
 
+app.get('/address', (req, res) => {
+    res.send(server.address().address);
+});
+
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({server: server});
 
