@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/address', (req, res) => {
-    res.send(server.address().address);
+    res.send(req.get('host'));
 });
 
 const server = require('http').createServer(app);
