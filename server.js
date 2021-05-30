@@ -11,8 +11,26 @@ app.get('/', (req, res) => {
     res.render('index', {template: 'index'});
 });
 
-app.get('/address', (req, res) => {
-    res.send(req.protocol + '://' + req.get('host'));
+app.get('/esp', (req, res) => {
+    CO2chartData.shift();
+    CO2chartData.push(Math.floor(Math.random() * 11));
+
+    NOchartData.shift();
+    NOchartData.push(Math.floor(Math.random() * 11));
+
+    NH3chartData.shift();
+    NH3chartData.push(Math.floor(Math.random() * 11));
+
+    clients.forEach((client) => {
+        client.send(JSON.stringify({
+            type: 'update',
+            CO2chartData: CO2chartData[CO2chartData.length - 1],
+            NOchartData: NOchartData[NOchartData.length - 1],
+            NH3chartData: NH3chartData[NH3chartData.length - 1]
+        }));
+    });
+    
+    res.end();
 });
 
 const server = require('http').createServer(app);
