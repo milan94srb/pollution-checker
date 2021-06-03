@@ -1,4 +1,6 @@
 const updateButton = document.querySelector('#update-button');
+const minValueElement = document.querySelector('#pc-min-value');
+const maxValueElement = document.querySelector('#pc-max-value');
 
 const currentDate = new Date();
 let currentHour = currentDate.getHours();
@@ -25,18 +27,6 @@ var pollutionChart = new Chart(ctx, {
                 borderColor: 'red',
                 backgroundColor: 'red'
             },
-            {
-                label: 'NO',
-                data: [],
-                borderColor: 'green',
-                backgroundColor: 'green'
-            },
-            {
-                label: 'NH3',
-                data: [],
-                borderColor: 'blue',
-                backgroundColor: 'blue'
-            }
         ]
     },
     options: {
@@ -58,9 +48,6 @@ socket.addEventListener('message', (event) => {
     switch(parsedMessage.type){
         case 'init':
             pollutionChart.data.datasets[0].data = parsedMessage.CO2chartData;
-            pollutionChart.data.datasets[1].data = parsedMessage.NOchartData;
-            pollutionChart.data.datasets[2].data = parsedMessage.NH3chartData;
-        
             pollutionChart.update();
 
             break;
@@ -68,15 +55,11 @@ socket.addEventListener('message', (event) => {
         case 'update':
             pollutionChart.data.datasets[0].data.shift();
             pollutionChart.data.datasets[0].data.push(parsedMessage.CO2chartData);
-
-            pollutionChart.data.datasets[1].data.shift();
-            pollutionChart.data.datasets[1].data.push(parsedMessage.NOchartData);
-
-            pollutionChart.data.datasets[2].data.shift();
-            pollutionChart.data.datasets[2].data.push(parsedMessage.NH3chartData);
-
             pollutionChart.update();
     }
+
+    minValueElement.textContent = parsedMessage.minValue;
+    maxValueElement.textContent = parsedMessage.maxValue;
 });
 
 updateButton.addEventListener('click', () => {
