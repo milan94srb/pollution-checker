@@ -9,7 +9,8 @@ let chartLabels = [];
 
 for(let i=0; i<24; i++){
     if(currentHour < 0){ currentHour = 23 };
-    chartLabels.push(currentHour.toLocaleString('en-US', { minimumIntegerDigits: 2 }) + 'h');
+    // chartLabels.push(currentHour.toLocaleString('en-US', { minimumIntegerDigits: 2 }) + 'h');
+    chartLabels.push('');
     currentHour--;
 }
 
@@ -22,7 +23,7 @@ var pollutionChart = new Chart(ctx, {
         labels: chartLabels,
         datasets: [
             {
-                label: 'CO2',
+                label: 'Received signal',
                 data: [],
                 borderColor: 'red',
                 backgroundColor: 'red'
@@ -33,7 +34,10 @@ var pollutionChart = new Chart(ctx, {
         maintainAspectRatio: false,
         scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                max: 3.5,
+                steps: 7,
+                stepValue: 0.5
             }
         }
     }
