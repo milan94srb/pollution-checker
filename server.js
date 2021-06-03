@@ -12,25 +12,13 @@ app.get('/', (req, res) => {
 });
 
 app.get('/esp', (req, res) => {
-    CO2chartData.shift();
-    CO2chartData.push(Math.floor(Math.random() * 11));
-
-    NOchartData.shift();
-    NOchartData.push(Math.floor(Math.random() * 11));
-
-    NH3chartData.shift();
-    NH3chartData.push(Math.floor(Math.random() * 11));
-
-    clients.forEach((client) => {
-        client.send(JSON.stringify({
-            type: 'update',
-            CO2chartData: CO2chartData[CO2chartData.length - 1],
-            NOchartData: NOchartData[NOchartData.length - 1],
-            NH3chartData: NH3chartData[NH3chartData.length - 1]
-        }));
-    });
-    
+    updateChartData();
     res.end();
+});
+
+app.get('/address', (req, res) => {
+    res.send(req.get('host'));
+    res.send(req.protocol + '://' + req.get('host'));
 });
 
 const server = require('http').createServer(app);
@@ -39,8 +27,8 @@ const wss = new WebSocket.Server({server: server});
 let clients = [];
 
 var CO2chartData = generateChartData();
-var NOchartData = generateChartData();
-var NH3chartData = generateChartData();
+var minValue = Math.min(...CO2chartData);
+var maxValue = Math.max(...CO2chartData);
 
 wss.on('connection', (ws) => {
     ws['id'] = Date.now();
@@ -53,28 +41,12 @@ wss.on('connection', (ws) => {
     ws.send(JSON.stringify({
         type: 'init',
         CO2chartData,
-        NOchartData,
-        NH3chartData
+        minValue,
+        maxValue
     }));
 
     ws.on('message', (message) => {
-        CO2chartData.shift();
-        CO2chartData.push(Math.floor(Math.random() * 11));
-
-        NOchartData.shift();
-        NOchartData.push(Math.floor(Math.random() * 11));
-
-        NH3chartData.shift();
-        NH3chartData.push(Math.floor(Math.random() * 11));
-
-        clients.forEach((client) => {
-            client.send(JSON.stringify({
-                type: 'update',
-                CO2chartData: CO2chartData[CO2chartData.length - 1],
-                NOchartData: NOchartData[NOchartData.length - 1],
-                NH3chartData: NH3chartData[NH3chartData.length - 1]
-            }));
-        });
+        updateChartData();
     });
 
     ws.on('close', () => {
@@ -97,4 +69,21 @@ function generateChartData() {
     }
 
     return chartData;
+}
+
+function updateChartData() {
+    CO2chartData.shift();
+    CO2chartData.push(Math.floor(Math.random() * 11));
+
+    if(CO2chartData[CO2chartData.length - 1] < minValue) { minValue = CO2chartData[CO2chartData.length - 1] };
+    if(CO2chartData[CO2chartData.length - 1] > maxValue) { maxValue = CO2chartData[CO2chartData.length - 1] };
+
+    clients.forEach((client) => {
+        client.send(JSON.stringify({
+            type: 'update',
+            CO2chartData: CO2chartData[CO2chartData.length - 1],
+            minValue,
+            maxValue
+        }));
+    });
 }
