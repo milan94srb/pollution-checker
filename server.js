@@ -65,7 +65,7 @@ function generateChartData() {
     let chartData = [];
 
     for(let i=0; i<24; i++){
-        chartData.push(Math.floor(Math.random() * 11));
+        chartData.push(Math.random() * 3.3);
     }
 
     return chartData;
@@ -73,7 +73,7 @@ function generateChartData() {
 
 function updateChartData() {
     CO2chartData.shift();
-    CO2chartData.push(Math.floor(Math.random() * 11));
+    CO2chartData.push(Math.random() * 3.3);
 
     if(CO2chartData[CO2chartData.length - 1] < minValue) { minValue = CO2chartData[CO2chartData.length - 1] };
     if(CO2chartData[CO2chartData.length - 1] > maxValue) { maxValue = CO2chartData[CO2chartData.length - 1] };
