@@ -27,12 +27,13 @@ app.get('/export', (req, res) => {
 });
 
 app.get('/reset', (req, res) => {
+    chartData = [];
+    thousandChartData = [];
+    lastValue = null;
+    minValue = null;
+    maxValue = null;
+    
     clients.forEach((client) => {
-        chartData = [];
-        thousandChartData = [];
-        lastValue = null;
-        minValue = null;
-        maxValue = null;
         client.send(JSON.stringify({
             type: 'init',
             chartData,
