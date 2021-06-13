@@ -26,6 +26,22 @@ app.get('/export', (req, res) => {
     });
 });
 
+app.get('/reset', (req, res) => {
+    clients.forEach((client) => {
+        chartData = [];
+        thousandChartData = [];
+        lastValue = null;
+        minValue = null;
+        maxValue = null;
+        client.send(JSON.stringify({
+            type: 'init',
+            chartData,
+            minValue,
+            maxValue
+        }));
+    });
+});
+
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({server: server});
 
