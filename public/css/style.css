@@ -3,6 +3,7 @@ body {
     color: black;
     max-width: 1200px;
     margin: auto;
+    font-family: 'Verdana';
 }
 
 .header {
