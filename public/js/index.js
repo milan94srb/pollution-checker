@@ -3,19 +3,11 @@ const minValueElement = document.querySelector('#pc-min-value');
 const maxValueElement = document.querySelector('#pc-max-value');
 const exportButton = document.querySelector('#export-button');
 
-const currentDate = new Date();
-let currentHour = currentDate.getHours();
-
 let chartLabels = [];
 
 for(let i=0; i<24; i++){
-    if(currentHour < 0){ currentHour = 23 };
-    // chartLabels.push(currentHour.toLocaleString('en-US', { minimumIntegerDigits: 2 }) + 'h');
     chartLabels.push('');
-    currentHour--;
 }
-
-chartLabels = chartLabels.reverse();
 
 var ctx = document.getElementById('pollution-chart').getContext('2d');
 var pollutionChart = new Chart(ctx, {
@@ -66,14 +58,13 @@ socket.addEventListener('message', (event) => {
 
     switch(parsedMessage.type){
         case 'init':
-            pollutionChart.data.datasets[0].data = parsedMessage.CO2chartData;
+            pollutionChart.data.datasets[0].data = parsedMessage.chartData;
             pollutionChart.update();
-
             break;
 
         case 'update':
-            pollutionChart.data.datasets[0].data.shift();
-            pollutionChart.data.datasets[0].data.push(parsedMessage.CO2chartData);
+            if(pollutionChart.data.datasets[0].data.length >= 24) { pollutionChart.data.datasets[0].data.shift(); }
+            pollutionChart.data.datasets[0].data.push(parsedMessage.lastValue);
             pollutionChart.update();
     }
 
@@ -82,7 +73,8 @@ socket.addEventListener('message', (event) => {
 });
 
 updateButton.addEventListener('click', () => {
-    socket.send('');
+    let newValue = Math.random() * 3.3;
+    socket.send(newValue.toString());
 });
 
 exportButton.addEventListener('click', () => {

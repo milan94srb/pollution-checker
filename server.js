@@ -3,7 +3,9 @@ const WebSocket = require('ws');
 
 const app = express();
 
+let chartData = [];
 let thousandChartData = [];
+let lastValue, minValue, maxValue;
 
 app.set('view engine', 'ejs');
 
@@ -11,11 +13,6 @@ app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     res.render('index', {template: 'index'});
-});
-
-app.get('/esp', (req, res) => {
-    updateChartData();
-    res.end();
 });
 
 app.get('/address', (req, res) => {
@@ -34,10 +31,6 @@ const wss = new WebSocket.Server({server: server});
 
 let clients = [];
 
-var CO2chartData = generateChartData();
-var minValue = Math.min(...CO2chartData);
-var maxValue = Math.max(...CO2chartData);
-
 wss.on('connection', (ws) => {
     ws['id'] = Date.now();
     clients.push(ws);
@@ -48,13 +41,22 @@ wss.on('connection', (ws) => {
 
     ws.send(JSON.stringify({
         type: 'init',
-        CO2chartData,
+        chartData,
         minValue,
         maxValue
     }));
 
-    ws.on('message', (message) => {
-        updateChartData();
+    ws.on('message', (value) => {
+        updateChartData(value);
+
+        clients.forEach((client) => {
+            client.send(JSON.stringify({
+                type: 'update',
+                lastValue,
+                minValue,
+                maxValue
+            }));
+        });
     });
 
     ws.on('close', () => {
@@ -69,34 +71,21 @@ wss.on('connection', (ws) => {
 
 server.listen(process.env.PORT || 3000, () => { console.log('listening on port 3000' )});
 
-function generateChartData() {
-    let chartData = [];
+function updateChartData(newValue) {
+    newValue = Number(newValue);
 
-    for(let i=0; i<24; i++){
-        chartData.push(Math.random() * 3.3);
-    }
+    lastValue = newValue;
 
-    return chartData;
-}
-
-function updateChartData() {
-    CO2chartData.shift();
+    if(chartData >= 24) { chartData.chartData.shift(); }
     if(thousandChartData.length >= 1000) { thousandChartData.shift() }
 
-    CO2chartData.push(Math.random() * 3.3);
+    chartData.push(newValue);
 
     let currentDate = new Date();
-    thousandChartData.push(new Array(CO2chartData[CO2chartData.length - 1], currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds()));
+    thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds()));
 
-    if(CO2chartData[CO2chartData.length - 1] < minValue) { minValue = CO2chartData[CO2chartData.length - 1] };
-    if(CO2chartData[CO2chartData.length - 1] > maxValue) { maxValue = CO2chartData[CO2chartData.length - 1] };
-
-    clients.forEach((client) => {
-        client.send(JSON.stringify({
-            type: 'update',
-            CO2chartData: CO2chartData[CO2chartData.length - 1],
-            minValue,
-            maxValue
-        }));
-    });
+    if(!minValue) { minValue = newValue; }
+    if(!maxValue) { maxValue = newValue; }
+    if(newValue < minValue) { minValue = newValue };
+    if(newValue > maxValue) { maxValue = newValue };
 }
