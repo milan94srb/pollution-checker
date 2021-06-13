@@ -20,8 +20,14 @@ body {
 
 .top {
     display: flex;
+    justify-content: space-around;
     align-items: center;
     height: 40vh;
+}
+
+.top img {
+    height: 80%;
+    width: auto;
 }
 
 .pollution-chart-wrapper {
