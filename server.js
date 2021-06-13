@@ -3,6 +3,8 @@ const WebSocket = require('ws');
 
 const app = express();
 
+let thousandChartData = [];
+
 app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
@@ -19,6 +21,12 @@ app.get('/esp', (req, res) => {
 app.get('/address', (req, res) => {
     res.send(req.get('host'));
     res.send(req.protocol + '://' + req.get('host'));
+});
+
+app.get('/export', (req, res) => {
+    res.json({
+        export: thousandChartData
+    });
 });
 
 const server = require('http').createServer(app);
@@ -73,7 +81,12 @@ function generateChartData() {
 
 function updateChartData() {
     CO2chartData.shift();
+    if(thousandChartData.length >= 1000) { thousandChartData.shift() }
+
     CO2chartData.push(Math.random() * 3.3);
+
+    let currentDate = new Date();
+    thousandChartData.push(new Array(CO2chartData[CO2chartData.length - 1], currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds()));
 
     if(CO2chartData[CO2chartData.length - 1] < minValue) { minValue = CO2chartData[CO2chartData.length - 1] };
     if(CO2chartData[CO2chartData.length - 1] > maxValue) { maxValue = CO2chartData[CO2chartData.length - 1] };

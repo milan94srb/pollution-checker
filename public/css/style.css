@@ -1,43 +1,29 @@
 body {
-    background-color: black;
-    color: white;
+    background-color: #f8f8f8;
+    color: black;
+    max-width: 1200px;
+    margin: auto;
 }
 
-.navbar-brand {
-    position: absolute;
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header img {
+    width: 60px;
+    height: auto;
+    border-radius: 5px;
 }
 
 .top {
     display: flex;
-    justify-content: space-around;
     align-items: center;
     height: 40vh;
-    flex-wrap: wrap;
-}
-
-.content {
-    max-width: 1200px;
-    margin: auto;
 }
 
 .pollution-chart-wrapper {
     position: relative;
     height: 40vh;
-}
-
-.map iframe {
-    max-width: 355px;
-    height: 200px;
-}
-
-@media only screen and (max-width: 991px) {
-    .navbar-brand {
-        position: relative;
-    }
-}
-
-@media only screen and (max-width: 768px) {
-    .top {
-        height: auto;
-    }
 }

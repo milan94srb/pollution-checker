@@ -1,6 +1,7 @@
 const updateButton = document.querySelector('#update-button');
 const minValueElement = document.querySelector('#pc-min-value');
 const maxValueElement = document.querySelector('#pc-max-value');
+const exportButton = document.querySelector('#export-button');
 
 const currentDate = new Date();
 let currentHour = currentDate.getHours();
@@ -25,19 +26,33 @@ var pollutionChart = new Chart(ctx, {
             {
                 label: 'Received signal',
                 data: [],
-                borderColor: 'red',
-                backgroundColor: 'red'
+                borderColor: '#f88c00',
+                backgroundColor: '#f88c00',
+                spanGaps: true,
+                pointRadius: 0
             },
         ]
     },
     options: {
         maintainAspectRatio: false,
+        normalized: true,
+        animation: false,
         scales: {
+            x: {
+                minRotation: 0,
+                maxRotation: 0,
+                ticks: {
+                    sampleSize: 24
+                }
+            },
             y: {
                 beginAtZero: true,
                 max: 3.5,
                 steps: 7,
-                stepValue: 0.5
+                stepValue: 0.5,
+                ticks: {
+                    sampleSize: 8
+                }
             }
         }
     }
@@ -68,4 +83,24 @@ socket.addEventListener('message', (event) => {
 
 updateButton.addEventListener('click', () => {
     socket.send('');
+});
+
+exportButton.addEventListener('click', () => {
+    fetch(location.origin + '/export')
+        .then((response) => {
+            response.json()
+                .then((data) => {
+                    var csv = 'Value,Hours,Minutes,Seconds,Milliseconds\n';
+                    data.export.forEach((row) => {
+                        csv += row.join(',');
+                        csv += '\n';
+                    });
+
+                    var hiddenElement = document.createElement('a');
+                    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+                    hiddenElement.target = '_blank';
+                    hiddenElement.download = 'values.csv';
+                    hiddenElement.click();
+                });
+        });
 });
