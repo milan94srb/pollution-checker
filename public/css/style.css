@@ -10,12 +10,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 10vh;
 }
 
 .header img {
-    width: 60px;
-    height: auto;
-    border-radius: 5px;
+    width: auto;
+    height: 100%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 .top {
@@ -33,4 +35,8 @@ body {
 .pollution-chart-wrapper {
     position: relative;
     height: 40vh;
+}
+
+.buttons {
+    height: 10vh;
 }
