@@ -101,8 +101,8 @@ function updateChartData(newValue) {
     let currentDate = new Date();
     thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds()));
 
-    if(!minValue) { minValue = newValue; }
-    if(!maxValue) { maxValue = newValue; }
+    if(minValue == null) { minValue = newValue; }
+    if(maxValue == null) { maxValue = newValue; }
     if(newValue < minValue) { minValue = newValue };
     if(newValue > maxValue) { maxValue = newValue };
 }
