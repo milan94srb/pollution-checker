@@ -82,7 +82,7 @@ exportButton.addEventListener('click', () => {
         .then((response) => {
             response.json()
                 .then((data) => {
-                    var csv = 'Value,Hours,Minutes,Seconds,Milliseconds\n';
+                    var csv = 'Value,Hours,Minutes,Seconds,Milliseconds,fromZero,Delay\n';
                     data.export.forEach((row) => {
                         csv += row.join(',');
                         csv += '\n';
