@@ -5,7 +5,8 @@ const app = express();
 
 let chartData = [];
 let thousandChartData = [];
-let lastValue, minValue, maxValue;
+let startTime = false;
+let lastValue, minValue, maxValue, lastTime;
 
 app.set('view engine', 'ejs');
 
@@ -29,9 +30,11 @@ app.get('/export', (req, res) => {
 app.get('/reset', (req, res) => {
     chartData = [];
     thousandChartData = [];
+    startTime = false;
     lastValue = null;
     minValue = null;
     maxValue = null;
+    lastTime = null;
     
     clients.forEach((client) => {
         client.send(JSON.stringify({
@@ -99,7 +102,24 @@ function updateChartData(newValue) {
     chartData.push(newValue);
 
     let currentDate = new Date();
-    thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds()));
+
+    if(!startTime && newValue !== 0) {
+        startTime = currentDate.getTime();
+        lastTime = startTime;
+        thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), 0, 0));
+    }
+    else if(startTime) {
+        const currentTime = currentDate.getTime();
+        const fromZero = currentTime - startTime;
+        const delay = currentTime - lastTime;
+
+        lastTime = currentTime;
+
+        thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), fromZero, delay));
+    }
+    else {
+        thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), '-', '-'));
+    }
 
     if(minValue == null) { minValue = newValue; }
     if(maxValue == null) { maxValue = newValue; }
