@@ -66,8 +66,8 @@ wss.on('connection', (ws) => {
         maxValue
     }));
 
-    ws.on('message', (value) => {
-        updateChartData(value);
+    ws.on('message', (values) => {
+        updateChartData(values);
 
         clients.forEach((client) => {
             client.send(JSON.stringify({
@@ -91,12 +91,13 @@ wss.on('connection', (ws) => {
 
 server.listen(process.env.PORT || 3000, () => { console.log('listening on port 3000' )});
 
-function updateChartData(newValue) {
-    newValue = Number(newValue);
+function updateChartData(newValues) {
+    newValues = JSON.parse(newValues);
+    newValue = Number(newValues.gas);
 
     lastValue = newValue;
 
-    if(chartData >= 24) { chartData.chartData.shift(); }
+    if(chartData >= 1000) { chartData.chartData.shift(); }
     if(thousandChartData.length >= 1000) { thousandChartData.shift() }
 
     chartData.push(newValue);
@@ -106,19 +107,19 @@ function updateChartData(newValue) {
     if(!startTime && newValue !== 0) {
         startTime = currentDate.getTime();
         lastTime = startTime;
-        thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), 0, 0));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues.temp, newValues.humidity));
     }
     else if(startTime) {
         const currentTime = currentDate.getTime();
-        const fromZero = currentTime - startTime;
-        const delay = currentTime - lastTime;
+        // const fromZero = currentTime - startTime;
+        // const delay = currentTime - lastTime;
 
         lastTime = currentTime;
 
-        thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), fromZero, delay));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues.temp, newValues.humidity));
     }
     else {
-        thousandChartData.push(new Array(newValue, currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), '-', '-'));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues.temp, newValues.humidity));
     }
 
     if(minValue == null) { minValue = newValue; }

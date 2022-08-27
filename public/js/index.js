@@ -5,7 +5,7 @@ const exportButton = document.querySelector('#export-button');
 
 let chartLabels = [];
 
-for(let i=0; i<24; i++){
+for(let i=0; i<1000; i++){
     chartLabels.push('');
 }
 
@@ -13,37 +13,43 @@ var ctx = document.getElementById('pollution-chart').getContext('2d');
 var pollutionChart = new Chart(ctx, {
     type: 'line',
     data: {
-        labels: chartLabels,
+        labels: chartLabels,    
         datasets: [
             {
-                label: 'Received signal',
+                label: 'CO2 Concetration',
                 data: [],
-                borderColor: '#f88c00',
-                backgroundColor: '#f88c00',
+                borderColor: 'green',
+                backgroundColor: 'green',
                 spanGaps: true,
-                pointRadius: 0
+                pointRadius: 0  
             },
         ]
     },
     options: {
+        responsive: true,
         maintainAspectRatio: false,
         normalized: true,
         animation: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
         scales: {
             x: {
                 minRotation: 0,
                 maxRotation: 0,
                 ticks: {
-                    sampleSize: 24
+                    sampleSize: 120
                 }
             },
             y: {
                 beginAtZero: true,
-                max: 3.5,
-                steps: 7,
-                stepValue: 0.5,
+                max: 1000,
+                steps: 9,
+                stepValue: 100,
                 ticks: {
-                    sampleSize: 8
+                    sampleSize: 10
                 }
             }
         }
@@ -63,7 +69,7 @@ socket.addEventListener('message', (event) => {
             break;
 
         case 'update':
-            if(pollutionChart.data.datasets[0].data.length >= 24) { pollutionChart.data.datasets[0].data.shift(); }
+            if(pollutionChart.data.datasets[0].data.length >= 1000) { pollutionChart.data.datasets[0].data.shift(); }
             pollutionChart.data.datasets[0].data.push(parsedMessage.lastValue);
             pollutionChart.update();
     }
@@ -73,8 +79,12 @@ socket.addEventListener('message', (event) => {
 });
 
 updateButton.addEventListener('click', () => {
-    let newValue = Math.random() * 3.3;
-    socket.send(newValue.toString());
+    let newValue = Math.random() * 1000;
+    socket.send(JSON.stringify({
+        gas: newValue,
+        temp: 27,
+        humidity: 103
+    }));
 });
 
 exportButton.addEventListener('click', () => {
@@ -82,7 +92,7 @@ exportButton.addEventListener('click', () => {
         .then((response) => {
             response.json()
                 .then((data) => {
-                    var csv = 'Value,Hours,Minutes,Seconds,Milliseconds,fromZero,Delay\n';
+                    var csv = 'Month,Day,Hours,Minutes,Seconds,Milliseconds,Gas,Temperature,Humidity\n';
                     data.export.forEach((row) => {
                         csv += row.join(',');
                         csv += '\n';

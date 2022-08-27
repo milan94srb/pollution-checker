@@ -1,6 +1,9 @@
 body {
     background-color: #f8f8f8;
-    color: black;
+    background-image: url('../img/background.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
     max-width: 1200px;
     margin: auto;
     font-family: 'Cantarell';
@@ -32,11 +35,39 @@ body {
     width: auto;
 }
 
+.container {
+    overflow-x: scroll;
+    background-color: white;
+}
+
 .pollution-chart-wrapper {
     position: relative;
+    width: 500vw;
     height: 40vh;
 }
 
 .buttons {
     height: 10vh;
+}
+
+#legend {
+    --height: 24px;
+
+    display: flex;
+    align-items: center;
+    gap: calc(var(--height) / 2);
+    margin-bottom: calc(var(--height) / 2);
+}
+
+#legend::before {
+    content: '';
+    width: calc(var(--height) * 3);
+    height: var(--height);
+    background-color: green;
+}
+
+#pc-date-time {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }

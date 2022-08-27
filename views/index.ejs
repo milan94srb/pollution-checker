@@ -2,14 +2,17 @@
 
 <div class="content">
     <div class="top">
-        <img src="img/telsiks-graph.png" alt="telsiks-graph">
         <div class="stats">
             <%- include('partials/stats') %>
         </div>
+        <img src="img/telsiks-graph.png" alt="telsiks-graph">
     </div>
 
-    <div class="pollution-chart-wrapper">
-        <canvas id="pollution-chart"></canvas>
+    <span id="legend">CO2 Concetration</span>
+    <div class="container">
+        <div class="pollution-chart-wrapper">
+            <canvas id="pollution-chart" width="2400"></canvas>
+        </div>
     </div>
     
     <div class="buttons">
