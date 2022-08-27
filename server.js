@@ -92,8 +92,8 @@ wss.on('connection', (ws) => {
 server.listen(process.env.PORT || 3000, () => { console.log('listening on port 3000' )});
 
 function updateChartData(newValues) {
-    newValues = JSON.parse(newValues);
-    newValue = Number(newValues.gas);
+    newValues = newValues.split(',');
+    newValue = Number(newValues[0]);
 
     lastValue = newValue;
 
@@ -107,7 +107,7 @@ function updateChartData(newValues) {
     if(!startTime && newValue !== 0) {
         startTime = currentDate.getTime();
         lastTime = startTime;
-        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues.temp, newValues.humidity));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2]));
     }
     else if(startTime) {
         const currentTime = currentDate.getTime();
@@ -116,10 +116,10 @@ function updateChartData(newValues) {
 
         lastTime = currentTime;
 
-        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues.temp, newValues.humidity));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2]));
     }
     else {
-        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues.temp, newValues.humidity));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2]));
     }
 
     if(minValue == null) { minValue = newValue; }

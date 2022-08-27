@@ -80,11 +80,7 @@ socket.addEventListener('message', (event) => {
 
 updateButton.addEventListener('click', () => {
     let newValue = Math.random() * 1000;
-    socket.send(JSON.stringify({
-        gas: newValue,
-        temp: 27,
-        humidity: 103
-    }));
+    socket.send(newValue + ',' + 27 + ',' + 103);
 });
 
 exportButton.addEventListener('click', () => {
