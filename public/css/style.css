@@ -1,5 +1,4 @@
 body {
-    background-color: #f8f8f8;
     background-image: url('../img/background.jpg');
     background-size: cover;
     background-position: center;
@@ -25,49 +24,59 @@ body {
 
 .top {
     display: flex;
-    justify-content: space-around;
     align-items: center;
-    height: 40vh;
+    gap: 0;
+    height: 35vh;
+}
+
+.top .stats {
+    flex-basis: 0;
+    flex-grow: 1;
 }
 
 .top img {
+    flex-basis: 0;
+    flex-grow: 1;
     height: 80%;
     width: auto;
-}
-
-.container {
-    overflow-x: scroll;
-    background-color: white;
-}
-
-.pollution-chart-wrapper {
-    position: relative;
-    width: 500vw;
-    height: 40vh;
-}
-
-.buttons {
-    height: 10vh;
-}
-
-#legend {
-    --height: 24px;
-
-    display: flex;
-    align-items: center;
-    gap: calc(var(--height) / 2);
-    margin-bottom: calc(var(--height) / 2);
-}
-
-#legend::before {
-    content: '';
-    width: calc(var(--height) * 3);
-    height: var(--height);
-    background-color: green;
+    object-fit: contain;
+    object-position: right;
 }
 
 #pc-date-time {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+#legend {
+    --height: 10vh;
+    --rect-width: 48px;
+
+    display: flex;
+    align-items: center;
+    gap: calc(var(--rect-width) / 2);
+    height: var(--height);
+}
+
+#legend::before {
+    content: '';
+    width: var(--rect-width);
+    height: calc(var(--rect-width) / 2);
+    background-color: green;
+}
+
+.container {
+    overflow-x: scroll;
+    background-color: white;
+    height: 35vh;
+}
+
+.pollution-chart-wrapper {
+    width: 500vw;
+    height: 100%;
+}
+
+.buttons {
+    height: 10vh;
 }

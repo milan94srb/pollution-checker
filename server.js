@@ -6,7 +6,8 @@ const app = express();
 let chartData = [];
 let thousandChartData = [];
 let startTime = false;
-let lastValue, minValue, maxValue, lastTime;
+let suggestedValue = '<7';
+let lastValue, minValue, maxValue, temperature, humidity, pressure, lastTime;
 
 app.set('view engine', 'ejs');
 
@@ -34,6 +35,9 @@ app.get('/reset', (req, res) => {
     lastValue = null;
     minValue = null;
     maxValue = null;
+    temperature = null;
+    humidity = null;
+    pressure = null;
     lastTime = null;
     
     clients.forEach((client) => {
@@ -41,7 +45,11 @@ app.get('/reset', (req, res) => {
             type: 'init',
             chartData,
             minValue,
-            maxValue
+            maxValue,
+            suggestedValue,
+            temperature,
+            humidity,
+            pressure
         }));
     });
 });
@@ -63,7 +71,11 @@ wss.on('connection', (ws) => {
         type: 'init',
         chartData,
         minValue,
-        maxValue
+        maxValue,
+        suggestedValue,
+        temperature,
+        humidity,
+        pressure
     }));
 
     ws.on('message', (values) => {
@@ -74,7 +86,11 @@ wss.on('connection', (ws) => {
                 type: 'update',
                 lastValue,
                 minValue,
-                maxValue
+                maxValue,
+                suggestedValue,
+                temperature,
+                humidity,
+                pressure
             }));
         });
     });
@@ -107,7 +123,7 @@ function updateChartData(newValues) {
     if(!startTime && newValue !== 0) {
         startTime = currentDate.getTime();
         lastTime = startTime;
-        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2]));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2], newValues[3]));
     }
     else if(startTime) {
         const currentTime = currentDate.getTime();
@@ -116,14 +132,18 @@ function updateChartData(newValues) {
 
         lastTime = currentTime;
 
-        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2]));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2], newValues[3]));
     }
     else {
-        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2]));
+        thousandChartData.push(new Array(currentDate.getDate(), currentDate.getMonth(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds(), currentDate.getMilliseconds(), newValue, newValues[1], newValues[2], newValues[3]));
     }
 
     if(minValue == null) { minValue = newValue; }
     if(maxValue == null) { maxValue = newValue; }
     if(newValue < minValue) { minValue = newValue };
     if(newValue > maxValue) { maxValue = newValue };
+
+    temperature = newValues[1];
+    humidity = newValues[2];
+    pressure = newValues[3];
 }
